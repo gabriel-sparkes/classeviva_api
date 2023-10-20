@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 LOGIN = "https://web.spaggiari.eu/auth-p7/app/default/AuthApi4.php?a=aLoginPwd"
 LOGOUT = "https://web.spaggiari.eu/home/app/default/logout.php"
 MARKS = "https://web.spaggiari.eu/cvv/app/default/genitori_note.php"
-MARKS_LATEST = "https://web.spaggiari.eu/cvv/app/default/genitori_note.php?ordine=data&filtro=ultimi"
 COMMUNICATIONS = "https://web.spaggiari.eu/sif/app/default/bacheca_personale.php"
 USERNAME = "https://web.spaggiari.eu/tools/app/default/get_username.php"
 AGENDA = "https://web.spaggiari.eu/fml/app/default/agenda_studenti.php?ope=get_events"
@@ -29,6 +28,9 @@ class User:
             return self.session.get(USERNAME).json() is not None
         except:
             return False
+        
+    def get_username(self):
+        return self.session.get(USERNAME).json()
         
     def get_agenda(self, days):
         payload = {
@@ -56,4 +58,10 @@ class User:
             comment = tag.select_one('span[style="font-weight: bold"]').text.strip()
             subjects[last_subject].append({"date": date, "mark": mark, "type": mark_type, "comment": comment})
         return subjects
-            
+    
+    def get_communications(self, which=""):
+        if which == "new":
+            return self.session.post(COMMUNICATIONS, {"action": "get_comunicazioni", "ncna": "1"}).json()["msg_new"]
+        elif which == "read":
+            return self.session.post(COMMUNICATIONS, {"action": "get_comunicazioni", "ncna": "1"}).json()["read"]
+        return self.session.post(COMMUNICATIONS, {"action": "get_comunicazioni", "ncna": "1"}).json()

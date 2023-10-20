@@ -6,4 +6,6 @@ load_dotenv()
 
 user = User(os.getenv("CVV_UID"), os.getenv("CVV_PWD"))
 user.login()
-print(user.get_marks())
+for lol in user.get_communications("read"):
+    print(lol["testo"].strip() + "\n" + "-"*20)
+user.logout()
